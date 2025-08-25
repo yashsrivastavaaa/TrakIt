@@ -1,29 +1,27 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthContext } from "@/context/AuthContext";
+import { Stack } from "expo-router";
+import { useState } from "react";
 
+interface USER {
+  name: string;
+  password: string;
+  email: string;
+}
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
+  const [userData, setUserData] = useState<USER | undefined>(undefined);
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <AuthContext.Provider value={{ userData, setUserData }}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(auth)/(tabs)" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/(tabs)" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/screens/addnewjob" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/screens/viewJobScreen" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/screens/editScreen" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/screens/changePassword" options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="platform/screens/editProfileScreen" options={{ headerShown: false, headerTitle: '' }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </AuthContext.Provider>
   );
 }

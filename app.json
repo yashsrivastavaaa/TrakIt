@@ -4,7 +4,7 @@
     "slug": "TrakIt",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/TrakIt.png",
     "scheme": "trakit",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,22 +13,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/TrakIt.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.yashsrivastavaaa.TrakIt"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/TrakIt.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/TrakIt.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -37,6 +38,28 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "entryPoint": "./app/index.tsx",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "expo-router": {
+      "appDirectory": "./app",
+      "index": "index.tsx"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0642b6ae-873f-40fc-bb4f-2d0ff4132d95"
+      }
     }
   }
 }
