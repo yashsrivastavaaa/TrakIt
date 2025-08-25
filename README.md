@@ -7,12 +7,19 @@ TrakIt is a simple and effective tool to help you stay organized during your job
 
 ## ✨ Features
 
-- Add **company names** and job positions you've applied for  
-- Track and update **application statuses**:
+- 🔐 Secure login system to protect your data
+- 📋 Add **company names**, job positions, CTC, location, and additional notes you've applied for
+- 🔄 Track and update **application statuses**:
   - `Applied`
   - `Interviewing`
   - `Offered`
   - `Rejected`
+- ⭐ Search applications by **company** or **position**
+- ✏️ Edit or delete job application entries easily
+- 📊 Stay organized and focused throughout your job hunt
+- 📂 Filter applications by status for better organization
+- 📆 Track application dates and progress over time
+
 
 ---
 
