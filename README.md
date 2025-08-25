@@ -1,7 +1,13 @@
 # TrakIt
 
-**Seamlessly track your job applications.**  
-TrakIt is a comprehensive job application tracker designed to help job seekers stay organized and efficient throughout their job search process. It allows users to securely log in and maintain detailed records of companies they’ve applied to, including job positions, locations, compensation, and personalized notes. With TrakIt, users can easily track and update the status of each application—from applied to interviewing, offered, or rejected—while also enabling search and filtering for better management. Built with a clean and intuitive interface, TrakIt simplifies the often overwhelming task of managing multiple job applications, empowering users to stay focused and make informed decisions in their career journey.
+**Seamlessly track your job applications.**
+
+TrakIt is a comprehensive job application tracker designed to help job seekers stay organized and efficient throughout their job search process. It allows users to securely log in and maintain detailed records of companies they’ve applied to, including job positions, locations, compensation, and personalized notes.
+
+With TrakIt, users can easily track and update the status of each application—from applied to interviewing, offered, or rejected—while also enabling search and filtering for better management.
+
+Built with a clean and intuitive interface, TrakIt simplifies the often overwhelming task of managing multiple job applications, empowering users to stay focused and make informed decisions in their career journey.
+
 ---
 
 ## ✨ Features
