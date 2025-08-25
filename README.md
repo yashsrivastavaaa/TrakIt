@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+# TrakIt
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Seamlessly track your job applications.**  
+TrakIt is a simple and effective tool to help you stay organized during your job search. Keep a record of the companies you've applied to and track the status of each application in one place.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- Add **company names** and job positions you've applied for  
+- Track and update **application statuses**:
+  - `Applied`
+  - `Interviewing`
+  - `Offered`
+  - `Rejected`
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 📱 Live Demo
 
-In the output, you'll find options to open the app in a
+### 1. Install **Expo Go**
+Download Expo Go from your device’s app store:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent&pcampaignid=web_share)  
+- [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 2. Launch TrakIt
+Scan the QR code below using the Expo Go app to launch the app instantly:
 
-## Get a fresh project
+<p align="center">
+  <img src="https://raw.githubusercontent.com/yashsrivastavaaa/TrakIt/refs/heads/main/assets/images/TrakIt%20qr.png" height="308" width="312" alt="TrakIt QR Code">
+</p>
 
-When you're ready, run:
+> ⚠️ Ensure your mobile device is connected to the internet.
+
+---
+
+### 🔗 Direct APK/Build Link  
+[Download from Google Drive](https://drive.google.com/file/d/1gRlXb2Wmg7J_3RzAn88Q9pINORkmw0Ct/view?usp=sharing)
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend:** React Native  
+- **Database:** NeonDB (PostgreSQL)
+
+---
+
+## 🚀 Installation
 
 ```bash
-npm run reset-project
+# Clone the repository
+git clone https://github.com/yashsrivastavaaa/TrakIt.git
+cd TrakIt
+
+# Install dependencies
+npm install
+# or
+yarn install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
