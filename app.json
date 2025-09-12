@@ -2,7 +2,7 @@
   "expo": {
     "name": "TrakIt",
     "slug": "TrakIt",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/TrakIt.png",
     "scheme": "trakit",
@@ -44,7 +44,8 @@
       "**/*"
     ],
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/0642b6ae-873f-40fc-bb4f-2d0ff4132d95"
     },
     "platforms": [
       "ios",
@@ -60,6 +61,9 @@
       "eas": {
         "projectId": "0642b6ae-873f-40fc-bb4f-2d0ff4132d95"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

@@ -1,4 +1,5 @@
 import LoginTopBox from '@/components/LoginTopBox';
+import { auth } from '@/config/firebaseConfig';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -16,12 +17,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import ThemedAlert from '@/components/ThemedAlert'; // ✅ import it
+import { pending } from '@/config/pending';
+import { pendingSchema } from '@/config/pendingSchema';
 import { user } from '@/config/users';
 import { userSchema } from '@/config/userSchema';
 import { eq } from 'drizzle-orm';
 import { router } from 'expo-router';
-
-import ThemedAlert from '@/components/ThemedAlert'; // ✅ import it
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +59,11 @@ export default function SignUp() {
             return;
         }
 
+        if (password.length < 6) {
+            showAlert('Password should be at least 6 characters long.', 'Error');
+            return;
+        }
+
         if (password !== confirmPassword) {
             showAlert('Passwords do not match.', 'Error');
             return;
@@ -64,32 +72,72 @@ export default function SignUp() {
         setLoading(true);
 
         try {
-            // Check if user already exists
-            const existingUser = await user
-                .select()
-                .from(userSchema)
-                .where(eq(userSchema.email, email));
+            const existing = await user.select().from(userSchema).where(eq(userSchema.email, email));
 
-            if (existingUser.length > 0) {
-                showAlert('An account with this email already exists.', 'Error');
+            if (existing.length > 0) {
+                setAlertMessage('Email already in use. Please sign in.');
+                setAlertType('Error');
+                setAlertVisible(true);
                 setLoading(false);
                 return;
             }
-
-            // Insert new user
-            await user.insert(userSchema).values({
-                name,
-                email,
-                password,
-            });
-
-            showAlert('Account created successfully!', 'Success');
-            setTimeout(() => router.push('/(auth)/(tabs)/signin'), 1500);
         } catch (error) {
-            console.error('Sign up error:', error);
-            showAlert('Something went wrong. Please try again.', 'Error');
+            console.error('Error checking existing users:', error);
+            setAlertMessage('Something went wrong. Please try again.');
+            setAlertType('Error');
+            setAlertVisible(true);
+            setLoading(false);
+            return;
+        }
+
+
+        try {
+            const existing = await pending.select().from(pendingSchema).where(eq(pendingSchema.email, email));
+
+            if (existing.length > 0) {
+                setAlertMessage('Verification mail already sent. Please verify it.');
+                setAlertType('Error');
+                setAlertVisible(true);
+                setLoading(false);
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking existing users:', error);
+            setAlertMessage('Something went wrong. Please try again.');
+            setAlertType('Error');
+            setAlertVisible(true);
+            setLoading(false);
+            return;
+        }
+
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await sendEmailVerification(userCredential.user);
+            setAlertMessage('Verification email sent! Please check your inbox.');
+            setAlertType('Success'); // ✅ FIXED: should be "Success"
+            setAlertVisible(true);
+        } catch (error) {
+            console.log('Error creating user:', error);
+            setAlertMessage('Unable to send mail. Please try again.');
+            setAlertType('Error'); // ✅ FIXED: should be "Error"
+            setAlertVisible(true);
+            setLoading(false);
+            return;
         } finally {
             setLoading(false);
+        }
+
+        try {
+            const result = await pending.insert(pendingSchema).values({
+                name,
+                email,
+                password
+            });
+        } catch (error) {
+            setAlertMessage('Something went wrong. Please try again.');
+            setAlertType('Error');
+            setAlertVisible(true);
         }
     };
 
@@ -105,6 +153,7 @@ export default function SignUp() {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
+                    <Text style={{ textAlign: 'center', color: 'white' }}>v1.2</Text>
                     <LoginTopBox />
                     <Text style={styles.header}>Create Account</Text>
                     <Text style={styles.subtext}>Join us today</Text>
@@ -198,7 +247,13 @@ export default function SignUp() {
                     visible={alertVisible}
                     message={alertMessage}
                     title={alertType}
-                    onClose={() => setAlertVisible(false)}
+                    onClose={() => {
+                        setAlertVisible(false)
+                        if (alertType === 'Success') {
+                            router.replace('/(auth)/(tabs)/signin');
+                        }
+                    }
+                    }
                 />
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -268,3 +323,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
+
+
+

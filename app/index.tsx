@@ -27,5 +27,5 @@ export default function Index() {
     return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>;
   }
 
-  return <Redirect href={userData ? '/platform/home' : '/(auth)/(tabs)/signin'} />;
+  return <Redirect href={userData ? '/platform/(tabs)/home' : '/(auth)/(tabs)/signin'} />;
 }

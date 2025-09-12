@@ -21,6 +21,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+/*     resume_link: text('resume_link'),
+    bond_duration: integer('bond_duration'), // in months
+    bond_fine: numeric('bond_fine', { precision: 10, scale: 2 }),
+    stipend: numeric('stipend', { precision: 10, scale: 2 }),
+    intern_duration: integer('intern_duration'), // number (e.g. months)
+    application_deadline: date('application_deadline'),
+    important_date: date('important_date'),
+    tag: varchar('tag', { length: 100 }),
+
+*/
+
 export default function AddJobScreen() {
     const [company, setCompany] = useState('');
     const [role, setRole] = useState('');
@@ -33,17 +44,46 @@ export default function AddJobScreen() {
     const [techstacks, setTechstacks] = useState('');
     const [loading, setLoading] = useState(false);
     const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const [resume_link, setResumeLink] = useState('');
+    const [bond_duration, setBondDuration] = useState('');
+    const [bond_fine, setBondFine] = useState('');
+    const [stipend, setStipend] = useState(''); // in months
+    const [intern_duration, setInternDuration] = useState('');
+    const [application_deadline, setApplicationDeadline] = useState(new Date());
+    const [important_date, setImportantDate] = useState(new Date());
+    const [tag, setTag] = useState('');
+    const [showDeadlinePicker, setShowDeadlinePicker] = useState(false);
+    const [showImportantDatePicker, setShowImportantDatePicker] = useState(false);
+
 
     const { userData } = useContext(AuthContext);
 
-    const statuses = ['Applied', 'Interviewing', 'Offered', 'Rejected', 'Accepted'];
+    const statuses = [
+        'Yet to Apply',
+        'Applied',
+        'Shortlisted',
+        'Assessment Completed',
+        'Interview Scheduled',
+        'Interviewing',
+        'Offered',
+        'Accepted',
+        'Rejected',
+        'Withdrawn',
+    ];
+
     const statusColors: { [key: string]: string } = {
-        Applied: '#4CAF50',
-        Interviewing: '#2196F3',
-        Offered: '#FF9800',
-        Rejected: '#F44336',
-        Accepted: '#9C27B0',
+        'Yet to Apply': '#9E9E9E',         // Neutral Grey
+        'Applied': '#4CAF50',              // Success Green
+        'Shortlisted': '#03A9F4',          // Light Blue
+        'Assessment Completed': '#FFC107', // Amber
+        'Interview Scheduled': '#00BCD4',  // Cyan
+        'Interviewing': '#3F51B5',         // Indigo
+        'Offered': '#FF9800',              // Orange
+        'Accepted': '#8BC34A',             // Light Green
+        'Rejected': '#F44336',             // Red
+        'Withdrawn': '#795548',            // Brown
     };
+
 
     const onChangeDate = (_: any, selectedDate?: Date) => {
         setShowDatePicker(Platform.OS === 'ios');
@@ -83,6 +123,35 @@ export default function AddJobScreen() {
 
         setLoading(true);
         try {
+
+            if (stipend === '') {
+                setStipend('0');
+            }
+            if (bond_fine === '') {
+                setBondFine('0');
+            }
+            if (bond_duration === '') {
+                setBondDuration('0');
+            }
+            if (intern_duration === '') {
+                setInternDuration('0');
+            }
+            if (ctc === '') {
+                setCtc('0');
+            }
+            if (techstacks === '') {
+                setAlertTitle('Error');
+                setAlertMessage('Techstacks are required.');
+                setAlertVisible(true);
+                return;
+            }
+            if (location === '') {
+                setAlertTitle('Error');
+                setAlertMessage('Location is required.');
+                setAlertVisible(true);
+                return;
+            }
+
             const result = await jobs.insert(jobSchema).values({
                 user_email: userData.email,
                 company_name: company,
@@ -91,10 +160,19 @@ export default function AddJobScreen() {
                 date_applied: dateApplied.toISOString().split('T')[0],
                 ctc: ctc,
                 location: location,
-                techstacks: techstacks
-                    ? techstacks.split(',').map((t) => t.trim())
-                    : null,
+                techstacks: techstacks ? techstacks.split(',').map((t) => t.trim()) : null,
+                notes: notes || null,
+                resume_link: resume_link || null,
+                bond_duration: bond_duration ? parseInt(bond_duration) : null,
+                bond_fine: bond_fine,
+                stipend: stipend,
+                intern_duration: intern_duration ? parseInt(intern_duration) : null,
+                application_deadline: application_deadline.toISOString().split('T')[0],
+                important_date: important_date.toISOString().split('T')[0],
+                tag: tag,
             });
+
+
 
             console.log('Inserted:', result);
 
@@ -137,7 +215,7 @@ export default function AddJobScreen() {
                     >
                         <Text style={styles.header}>Add New Job</Text>
 
-                        {/* Company Name */}
+                        <Text style={styles.label}>Company Name</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="profile" size={20} color="#666" style={styles.icon} />
                             <TextInput
@@ -150,7 +228,7 @@ export default function AddJobScreen() {
                             />
                         </View>
 
-                        {/* Role */}
+                        <Text style={styles.label}>Role</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="idcard" size={20} color="#666" style={styles.icon} />
                             <TextInput
@@ -163,7 +241,7 @@ export default function AddJobScreen() {
                             />
                         </View>
 
-                        {/* Status Picker */}
+                        <Text style={styles.label}>Application Status</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="tags" size={20} color="#666" style={styles.icon} />
                             <TouchableOpacity
@@ -206,7 +284,7 @@ export default function AddJobScreen() {
                             </View>
                         )}
 
-                        {/* Date Picker */}
+                        <Text style={styles.label}>Application Date</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="calendar" size={20} color="#666" style={styles.icon} />
                             <TouchableOpacity
@@ -230,7 +308,7 @@ export default function AddJobScreen() {
                             />
                         )}
 
-                        {/* CTC */}
+                        <Text style={styles.label}>CTC</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="creditcard" size={20} color="#666" style={styles.icon} />
                             <TextInput
@@ -244,7 +322,7 @@ export default function AddJobScreen() {
                             />
                         </View>
 
-                        {/* Location */}
+                        <Text style={styles.label}>Location</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="enviromento" size={20} color="#666" style={styles.icon} />
                             <TextInput
@@ -257,7 +335,7 @@ export default function AddJobScreen() {
                             />
                         </View>
 
-                        {/* Techstacks */}
+                        <Text style={styles.label}>Tech Stacks</Text>
                         <View style={styles.inputContainer}>
                             <AntDesign name="tool" size={20} color="#666" style={styles.icon} />
                             <TextInput
@@ -270,7 +348,7 @@ export default function AddJobScreen() {
                             />
                         </View>
 
-                        {/* Notes */}
+                        <Text style={styles.label}>Notes</Text>
                         <View style={[styles.inputContainer, { height: 100 }]}>
                             <AntDesign
                                 name="form"
@@ -285,6 +363,142 @@ export default function AddJobScreen() {
                                 value={notes}
                                 onChangeText={setNotes}
                                 multiline
+                                returnKeyType="done"
+                            />
+
+
+                        </View>
+                        <Text style={styles.label}>Resume Link</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="link" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="Resume Link"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={resume_link}
+                                onChangeText={setResumeLink}
+                                returnKeyType="next"
+                                autoCapitalize="none"
+                            />
+                        </View>
+
+                        <Text style={styles.label}>Bond Duration (in months)</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="clockcircleo" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="e.g., 24"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={bond_duration}
+                                onChangeText={setBondDuration}
+                                keyboardType="numeric"
+                                returnKeyType="next"
+                            />
+                        </View>
+
+                        <Text style={styles.label}>Bond Fine (₹)</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="warning" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="e.g., 50000"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={bond_fine}
+                                onChangeText={setBondFine}
+                                keyboardType="numeric"
+                                returnKeyType="next"
+                            />
+                        </View>
+
+                        <Text style={styles.label}>Stipend (monthly ₹)</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="pay-circle1" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="e.g., 15000"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={stipend}
+                                onChangeText={setStipend}
+                                keyboardType="numeric"
+                                returnKeyType="next"
+                            />
+                        </View>
+
+                        <Text style={styles.label}>Internship Duration (in months)</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="calendar" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="e.g., 6"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={intern_duration}
+                                onChangeText={setInternDuration}
+                                keyboardType="numeric"
+                                returnKeyType="next"
+                            />
+                        </View>
+
+                        <Text style={styles.label}>Application Deadline</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="calendar" size={20} color="#666" style={styles.icon} />
+                            <TouchableOpacity
+                                style={[styles.input, styles.pickerInput]}
+                                onPress={() => setShowDeadlinePicker(true)}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={{ color: '#fff' }}>
+                                    {application_deadline.toDateString()}
+                                </Text>
+                                <AntDesign name="calendar" size={16} color="#fff" />
+                            </TouchableOpacity>
+                        </View>
+                        {showDeadlinePicker && (
+                            <DateTimePicker
+                                value={application_deadline}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowDeadlinePicker(false);
+                                    if (selectedDate) setApplicationDeadline(selectedDate);
+                                }}
+                            />
+                        )}
+
+                        <Text style={styles.label}>Important Date</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="calendar" size={20} color="#666" style={styles.icon} />
+                            <TouchableOpacity
+                                style={[styles.input, styles.pickerInput]}
+                                onPress={() => setShowImportantDatePicker(true)}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={{ color: '#fff' }}>
+                                    {important_date.toDateString()}
+                                </Text>
+                                <AntDesign name="calendar" size={16} color="#fff" />
+                            </TouchableOpacity>
+                        </View>
+                        {showImportantDatePicker && (
+                            <DateTimePicker
+                                value={important_date}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowImportantDatePicker(false);
+                                    if (selectedDate) setImportantDate(selectedDate);
+                                }}
+                            />
+                        )}
+
+                        <Text style={styles.label}>Tag for important date</Text>
+                        <View style={styles.inputContainer}>
+                            <AntDesign name="tag" size={20} color="#666" style={styles.icon} />
+                            <TextInput
+                                placeholder="e.g., Interview/Assessment"
+                                placeholderTextColor="#999"
+                                style={styles.input}
+                                value={tag}
+                                onChangeText={setTag}
                                 returnKeyType="done"
                             />
                         </View>
@@ -337,6 +551,11 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         marginBottom: 30,
         alignSelf: 'center',
+    },
+    label: {
+        color: "#AAAAAA",
+        fontSize: 14,
+        marginBottom: 6,
     },
     inputContainer: {
         flexDirection: 'row',

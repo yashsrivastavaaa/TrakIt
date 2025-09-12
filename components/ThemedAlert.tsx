@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-        backgroundColor: 'rgb(16,25,45)', // matches your dark theme
+        backgroundColor: 'rgb(16,25,45)',
         borderRadius: 20,
         padding: 25,
         width: '80%',
