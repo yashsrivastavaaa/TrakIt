@@ -219,6 +219,14 @@ export default function AnalyticsPage() {
         );
     }
 
+    // Helper function for truncating labels
+    const truncateLabel = (label: string, length: number = 13) => {
+        if (label.length > length) {
+            return `${label.substring(0, length)}...`;
+        }
+        return label;
+    };
+
     const prepareChartData = (dataPoints: number[], labels: string[]) => {
         const maxVal = dataPoints.length > 0 ? Math.max(...dataPoints) : 0;
 
@@ -239,12 +247,12 @@ export default function AnalyticsPage() {
     };
 
     const monthlyTrendInfo = prepareChartData(monthlyTrend.map(m => m.count), monthlyTrend.map(m => m.label));
-    const topCompaniesInfo = prepareChartData(topCompanies.map(c => c.count), topCompanies.map(c => c.company));
-    const topRolesInfo = prepareChartData(topRoles.map(r => r.count), topRoles.map(r => r.role));
-    const statusFunnelInfo = prepareChartData(statusList.map(st => statusCounts[st] || 0), statusList.map(st => (st.length > 12 ? st.slice(0, 12) + '…' : st)));
+    const topCompaniesInfo = prepareChartData(topCompanies.map(c => c.count), topCompanies.map(c => truncateLabel(c.company)));
+    const topRolesInfo = prepareChartData(topRoles.map(r => r.count), topRoles.map(r => truncateLabel(r.role)));
+    const statusFunnelInfo = prepareChartData(statusList.map(st => statusCounts[st] || 0), statusList.map(st => truncateLabel(st)));
     const sortedTech = Object.entries(techFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const techFreqInfo = prepareChartData(sortedTech.map(([, count]) => count), sortedTech.map(([tech]) => tech));
-    const locationInfo = prepareChartData(locationBreakdown.map(l => l.count), locationBreakdown.map(l => l.location));
+    const techFreqInfo = prepareChartData(sortedTech.map(([, count]) => count), sortedTech.map(([tech]) => truncateLabel(tech)));
+    const locationInfo = prepareChartData(locationBreakdown.map(l => l.count), locationBreakdown.map(l => truncateLabel(l.location)));
 
     const allCtcRangeLabels = ['0-5', '5-10', '10-15', '15-20', '20-25', '25+'];
     const filteredCtcRanges = allCtcRangeLabels
@@ -280,7 +288,7 @@ export default function AnalyticsPage() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
-            <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator={false}>
                 <Text style={styles.header}>Application Analytics</Text>
 
                 <View style={styles.statsContainer}>
@@ -313,17 +321,43 @@ export default function AnalyticsPage() {
                         // @ts-ignore
                         BarChart
                         data={topCompaniesInfo.chartData} width={Math.max(screenWidth, topCompaniesInfo.chartData.labels.length * 80)} height={300} chartConfig={chartConfig} verticalLabelRotation={30} fromZero={true} style={styles.chartStyle} segments={topCompaniesInfo.segments} /></ScrollView>
+                <View style={styles.legendContainer}>
+                    {topCompanies
+                        .filter(item => item.company.length > 10)
+                        .map((item, index) => (
+                            <Text key={index} style={styles.legendText}>
+                                <Text style={{ fontWeight: 'bold' }}>{truncateLabel(item.company)}</Text>: {item.company}
+                            </Text>
+                        ))}
+                </View>
 
                 <Text style={styles.subHeader}>Top 5 Roles Applied To</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}><
                     //@ts-ignore
-                    BarChart data={topRolesInfo.chartData} width={Math.max(screenWidth, topRolesInfo.chartData.labels.length * 100)} height={320} chartConfig={chartConfig} verticalLabelRotation={60} fromZero={true} style={{ ...styles.chartStyle, paddingRight: 20 }} segments={topRolesInfo.segments} /></ScrollView>
+                    BarChart data={topRolesInfo.chartData} width={Math.max(screenWidth, topRolesInfo.chartData.labels.length * 100)} height={320} chartConfig={chartConfig} verticalLabelRotation={0} fromZero={true} style={{ ...styles.chartStyle, paddingRight: 20 }} segments={topRolesInfo.segments} /></ScrollView>
+                <View style={styles.legendContainer}>
+                    {topRoles
+                        .filter(item => item.role.length > 10)
+                        .map((item, index) => (
+                            <Text key={index} style={styles.legendText}>
+                                <Text style={{ fontWeight: 'bold' }}>{truncateLabel(item.role)}</Text>: {item.role}
+                            </Text>
+                        ))}
+                </View>
 
                 <Text style={styles.subHeader}>Application Status</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}><
                     //@ts-ignore
                     BarChart data={statusFunnelInfo.chartData} width={statusFunnelInfo.chartData.labels.length * 80} height={300} chartConfig={chartConfig} verticalLabelRotation={30} fromZero={true} style={{ ...styles.chartStyle, paddingRight: 20, paddingBottom: 2 }} segments={statusFunnelInfo.segments} /></ScrollView>
-                <View style={{ paddingHorizontal: 10, marginTop: 5 }}>{statusList.map((st, index) => (<Text key={index} style={styles.legendText}><Text style={{ fontWeight: 'bold' }}>{st.length > 12 ? st.slice(0, 12) + '…' : st}</Text>{' : '} {st}</Text>))}</View>
+                <View style={styles.legendContainer}>
+                    {statusList
+                        .filter(st => st.length > 10)
+                        .map((st, index) => (
+                            <Text key={index} style={styles.legendText}>
+                                <Text style={{ fontWeight: 'bold' }}>{truncateLabel(st)}</Text>: {st}
+                            </Text>
+                        ))}
+                </View>
 
                 <Text style={styles.subHeader}>Top 5 Technology Frequency</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -331,6 +365,15 @@ export default function AnalyticsPage() {
                         //@ts-ignore
                         BarChart data={techFreqInfo.chartData} width={Math.max(screenWidth - 40, techFreqInfo.chartData.labels.length * 80)} height={220} chartConfig={chartConfig} style={styles.chartStyle} fromZero={true} segments={techFreqInfo.segments} />
                 </ScrollView>
+                <View style={styles.legendContainer}>
+                    {sortedTech
+                        .filter(([tech]) => tech.length > 10)
+                        .map(([tech], index) => (
+                            <Text key={index} style={styles.legendText}>
+                                <Text style={{ fontWeight: 'bold' }}>{truncateLabel(tech)}</Text>: {tech}
+                            </Text>
+                        ))}
+                </View>
 
                 <Text style={styles.subHeader}>CTC Statistics (LPA)</Text>
                 {ctcStats ? (<><Text style={styles.listItem}>Avg: {ctcStats.avg.toFixed(2)}, Min: {ctcStats.min.toFixed(2)}, Max: {ctcStats.max.toFixed(2)}</Text><ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -345,6 +388,15 @@ export default function AnalyticsPage() {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}><
                     //@ts-ignore
                     BarChart data={locationInfo.chartData} width={Math.max(screenWidth, locationInfo.chartData.labels.length * 60)} height={220} chartConfig={chartConfig} style={styles.chartStyle} fromZero={true} segments={locationInfo.segments} /></ScrollView>
+                <View style={styles.legendContainer}>
+                    {locationBreakdown
+                        .filter(item => item.location.length > 13)
+                        .map((item, index) => (
+                            <Text key={index} style={styles.legendText}>
+                                <Text style={{ fontWeight: 'bold' }}>{truncateLabel(item.location)}</Text>: {item.location}
+                            </Text>
+                        ))}
+                </View>
 
                 <View style={{ marginBottom: 50 }}></View>
             </ScrollView>
@@ -366,5 +418,6 @@ const styles = StyleSheet.create({
     label: { fontSize: 14, color: '#E5E7EB', marginTop: 6, textAlign: 'center' },
     listItem: { color: '#E5E7EB', fontSize: 16, marginVertical: 4 },
     chartStyle: { marginVertical: 8, borderRadius: 16 },
+    legendContainer: { paddingHorizontal: 10, marginTop: 8 },
     legendText: { marginBottom: 6, fontSize: 12, color: 'white' },
 });

@@ -18,14 +18,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import LoginTopBox from '@/components/LoginTopBox';
 import ThemedAlert from '@/components/ThemedAlert';
-import { auth } from '@/config/firebaseConfig';
-import { pending } from '@/config/pending';
-import { pendingSchema } from '@/config/pendingSchema';
 import { user } from '@/config/users';
 import { userSchema } from '@/config/userSchema';
 import { AuthContext } from '@/context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 
 export default function SignIn() {
@@ -93,61 +89,6 @@ export default function SignIn() {
     };
 
 
-    const reCheck = async () => {
-        if (!email || !password) {
-            setAlertTitle('Error');
-            setAlertMessage('Please enter both email and password.');
-            setAlertVisible(true);
-            return;
-        }
-        if (!isValidEmail(email)) {
-            setAlertTitle('Error');
-            setAlertMessage('Please enter a valid email address.');
-            setAlertVisible(true);
-            return;
-        }
-
-        setLoading(true);
-
-        const res1 = await pending.select().from(pendingSchema).where(and(eq(pendingSchema.email, email)));
-
-        if (res1.length === 0) {
-            login();
-            return;
-        }
-
-        if (res1[0].password !== password) {
-            setAlertTitle('Error');
-            setAlertMessage('Invalid email or password.');
-            setAlertVisible(true);
-            setLoading(false);
-            return;
-        }
-
-        if (res1.length > 0) {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const data = userCredential.user;
-
-            if (data.emailVerified) {
-                const result = await user.insert(userSchema).values({
-                    name: res1[0].name,
-                    email: res1[0].email,
-                    password: res1[0].password
-                });
-
-                const dltres = await pending.delete(pendingSchema).where(eq(pendingSchema.email, email));
-
-                login();
-            } else {
-                setAlertTitle('Error');
-                setAlertMessage('Please verify your email before signing in.');
-                setAlertVisible(true);
-                return;
-            }
-        } else {
-            login();
-        }
-    }
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -202,7 +143,7 @@ export default function SignIn() {
 
                     {/* Sign In Button */}
                     <TouchableOpacity
-                        onPress={reCheck}
+                        onPress={login}
                         style={styles.signInButton}
                         disabled={loading}
                     >

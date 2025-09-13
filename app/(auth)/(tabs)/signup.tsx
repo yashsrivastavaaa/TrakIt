@@ -1,5 +1,4 @@
 import LoginTopBox from '@/components/LoginTopBox';
-import { auth } from '@/config/firebaseConfig';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -18,13 +17,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ThemedAlert from '@/components/ThemedAlert'; // ✅ import it
-import { pending } from '@/config/pending';
-import { pendingSchema } from '@/config/pendingSchema';
 import { user } from '@/config/users';
 import { userSchema } from '@/config/userSchema';
 import { eq } from 'drizzle-orm';
 import { router } from 'expo-router';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -90,55 +86,30 @@ export default function SignUp() {
             return;
         }
 
-
         try {
-            const existing = await pending.select().from(pendingSchema).where(eq(pendingSchema.email, email));
-
-            if (existing.length > 0) {
-                setAlertMessage('Verification mail already sent. Please verify it.');
-                setAlertType('Error');
-                setAlertVisible(true);
-                setLoading(false);
-                return;
-            }
-        } catch (error) {
-            console.error('Error checking existing users:', error);
-            setAlertMessage('Something went wrong. Please try again.');
-            setAlertType('Error');
-            setAlertVisible(true);
-            setLoading(false);
-            return;
-        }
-
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await sendEmailVerification(userCredential.user);
-            setAlertMessage('Verification email sent! Please check your inbox.');
-            setAlertType('Success'); // ✅ FIXED: should be "Success"
-            setAlertVisible(true);
-        } catch (error) {
-            console.log('Error creating user:', error);
-            setAlertMessage('Unable to send mail. Please try again.');
-            setAlertType('Error'); // ✅ FIXED: should be "Error"
-            setAlertVisible(true);
-            setLoading(false);
-            return;
-        } finally {
-            setLoading(false);
-        }
-
-        try {
-            const result = await pending.insert(pendingSchema).values({
+            const newUser = user.insert(userSchema).values({
                 name,
                 email,
-                password
+                password,
             });
+
+            setAlertMessage('Account created successfully. Please sign in.');
+            setAlertType('Success');
+            setAlertVisible(true);
+
+
+
         } catch (error) {
+            console.error('Error creating user:', error);
             setAlertMessage('Something went wrong. Please try again.');
             setAlertType('Error');
             setAlertVisible(true);
+
+        } finally {
+            setLoading(false);
+            return;
         }
+
     };
 
     return (
