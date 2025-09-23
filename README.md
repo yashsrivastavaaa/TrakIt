@@ -83,7 +83,7 @@ Download Expo Go from your device’s app store:
 Scan the QR code below using the Expo Go app to launch the app instantly:
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/yashsrivastavaaa/TrakIt/refs/heads/main/assets/images/TrakIt%20qr.png" height="308" width="312" alt="TrakIt QR Code">
+  <img src="https://raw.githubusercontent.com/yashsrivastavaaa/TrakIt/refs/heads/main/qr.png" height="308" width="312" alt="TrakIt QR Code">
 </p>
 
 > ⚠️ Ensure your mobile device is connected to the internet.
